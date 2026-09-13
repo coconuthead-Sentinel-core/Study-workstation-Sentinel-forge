@@ -1,0 +1,919 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sentinel Forge Study Workstation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --ground:#eef1f4; --surface:#fff; --surface-2:#f5f7f9; --surface-3:#eceff2;
+    --ink:#141b22; --ink-soft:#48555f; --ink-faint:#5d6873;
+    --line:#d3dae0; --line-strong:#b7c0c8; --accent:#1d5b79; --accent-ink:#fff;
+    --accent-soft:#e2edf2; --focus:#1d5b79;
+    --green:#2f7d52; --green-soft:#e2f0e8; --amber:#9a6a12; --amber-soft:#f6ecd6;
+    --red:#b23a2e; --red-soft:#f6e2df;
+    --shadow:0 1px 2px rgba(20,27,34,.06),0 4px 14px rgba(20,27,34,.06);
+  }
+  :root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+    --ground:#0f151a; --surface:#161f27; --surface-2:#1c2731; --surface-3:#22303b;
+    --ink:#e8edf1; --ink-soft:#a7b3bd; --ink-faint:#93a0ab;
+    --line:#2a3540; --line-strong:#3a4753; --accent:#6fb7d6; --accent-ink:#0f151a;
+    --accent-soft:#1b2d38; --focus:#6fb7d6;
+    --green:#5fce9a; --green-soft:#183026; --amber:#e0b055; --amber-soft:#332a15;
+    --red:#e8776a; --red-soft:#331e1b;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+  }}
+  :root[data-theme="dark"]{
+    --ground:#0f151a; --surface:#161f27; --surface-2:#1c2731; --surface-3:#22303b;
+    --ink:#e8edf1; --ink-soft:#a7b3bd; --ink-faint:#93a0ab;
+    --line:#2a3540; --line-strong:#3a4753; --accent:#6fb7d6; --accent-ink:#0f151a;
+    --accent-soft:#1b2d38; --focus:#6fb7d6;
+    --green:#5fce9a; --green-soft:#183026; --amber:#e0b055; --amber-soft:#332a15;
+    --red:#e8776a; --red-soft:#331e1b;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px;line-height:1.55}
+  .wrap{max-width:1000px;margin:0 auto;padding:16px 14px 60px}
+  h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.01em}
+  .brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:2px}
+  .tag{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+    background:var(--accent-soft);padding:3px 8px;border-radius:5px}
+  .subtle{color:var(--ink-faint);font-size:13px;margin:2px 0 14px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  /* tabs */
+  nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .tab{min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:9px;
+    background:var(--surface);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .tab:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,
+  [tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:18px;box-shadow:var(--shadow)}
+  .panel h2{font-size:18px;margin:0 0 4px}
+  .hint{color:var(--ink-soft);font-size:13.5px;margin:0 0 14px}
+  /* controls */
+  button{min-height:44px;padding:9px 14px;border:1px solid var(--line-strong);border-radius:9px;
+    background:var(--surface-2);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  button.small{min-height:36px;padding:6px 10px;font-size:13.5px;font-weight:500}
+  button.danger{color:var(--red)}
+  input[type=text],input[type=search],textarea,select{width:100%;font:inherit;color:var(--ink);
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;padding:10px 12px}
+  textarea{min-height:96px;resize:vertical;line-height:1.5}
+  label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:10px 0 4px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .row > *{flex:0 0 auto}
+  .grow{flex:1 1 160px}
+  /* grid */
+  .board{display:grid;grid-template-columns:32px repeat(26,minmax(58px,1fr));gap:5px;overflow-x:auto;padding-bottom:6px}
+  .gh{font:600 12px "IBM Plex Mono",monospace;color:var(--ink-faint);text-align:center;
+    display:flex;align-items:center;justify-content:center;min-height:24px}
+  .cell{min-height:58px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);
+    padding:5px 6px;cursor:pointer;text-align:left;font:inherit;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+  .cell:hover{border-color:var(--accent)}
+  .cell.filled{background:var(--surface)}
+  .cell.sel{outline:3px solid var(--focus);outline-offset:1px}
+  .cell .ct{font-size:12px;font-weight:600;line-height:1.25;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .cell .cc{font:600 10px "IBM Plex Mono",monospace;color:var(--ink-faint)}
+  .badge{align-self:flex-start;font:600 10px "IBM Plex Mono",monospace;background:var(--accent-soft);
+    color:var(--accent);border-radius:20px;padding:1px 6px}
+  .zdot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto}
+  .z-GREEN{background:var(--green)} .z-YELLOW{background:var(--amber)} .z-RED{background:var(--red)}
+  .pill{font:600 11px "IBM Plex Mono",monospace;padding:2px 7px;border-radius:20px;border:1px solid var(--line)}
+  .pill.GREEN{background:var(--green-soft);color:var(--green)}
+  .pill.YELLOW{background:var(--amber-soft);color:var(--amber)}
+  .pill.RED{background:var(--red-soft);color:var(--red)}
+  /* list items */
+  .item{border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;background:var(--surface-2)}
+  .item h3{margin:0 0 3px;font-size:15px}
+  .item .meta{font:500 12px "IBM Plex Mono",monospace;color:var(--ink-faint);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .item .body{font-size:14px;color:var(--ink-soft);margin:6px 0 0;white-space:pre-wrap}
+  .snippet{font-size:14px;color:var(--ink-soft);margin:6px 0 0}
+  .snippet mark{background:var(--amber-soft);color:var(--ink);padding:0 2px;border-radius:3px}
+  .empty{color:var(--ink-faint);font-size:14px;padding:14px;text-align:center;border:1px dashed var(--line-strong);border-radius:10px}
+  .banner{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:14px}
+  .stub{border:1px dashed var(--line-strong);border-radius:9px;padding:8px 11px;color:var(--ink-faint);font-size:13px;background:var(--surface-2)}
+  .stublist{display:flex;flex-direction:column;gap:6px}
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .subtabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+  .cite{font:600 11px "IBM Plex Mono",monospace;color:var(--accent);background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+  .divider{height:1px;background:var(--line);margin:16px 0}
+  .foot{margin-top:22px;font-size:12px;color:var(--ink-faint);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
+  .switch{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
+  /* reading tints — fixed pastel overlays with dark text (dyslexia-friendly standard) */
+  .tint-yellow{background:#fff3b8 !important;color:#201d0d !important;border-color:#dccf8a !important}
+  .tint-teal{background:#d3efe9 !important;color:#0f211e !important;border-color:#a8d8cf !important}
+  .tint-cream{background:#f9eed7 !important;color:#241d10 !important;border-color:#e0d1b2 !important}
+  .tintbtn{width:36px;height:36px;min-height:36px;border-radius:50%;padding:0;border:2px solid var(--line-strong)}
+  .tintbtn[aria-pressed="true"]{outline:3px solid var(--focus);outline-offset:2px}
+  .sizebtn{min-width:44px;font-weight:700}
+  #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;
+    background:var(--ink);color:var(--ground);padding:12px 16px;border-radius:10px;
+    box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;font-size:14px;max-width:92vw}
+  #toast button{min-height:36px;background:transparent;border:1.5px solid var(--ground);color:var(--ground);font-weight:700;border-radius:8px}
+  .ru{border-radius:3px}
+  .ru.on{background:var(--accent);color:var(--accent-ink)}
+  .item .body,.snippet,#reader .body{max-width:70ch}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+  [hidden]{display:none!important}
+</style>
+
+<div class="wrap">
+  <div class="brand"><h1>Study Workstation</h1><span class="tag">Sentinel Forge · Web</span>
+    <span class="grow"></span>
+    <button class="small sizebtn" id="fontMinus" aria-label="Smaller text">A−</button>
+    <button class="small sizebtn" id="fontPlus" aria-label="Larger text">A+</button>
+  </div>
+  <p class="subtle" id="storeNote">A calm, addressable place for what you're studying. Stored in this browser.</p>
+
+  <nav class="tabs" role="tablist" aria-label="Sections" id="tabs"></nav>
+
+  <!-- BOARD -->
+  <section class="panel" id="p-board" role="tabpanel" aria-label="Board" tabindex="0">
+    <h2>Board</h2>
+    <p class="hint">A–Z columns × rows that grow as you add cards. Each card has a fixed address. Tap a cell to see or add cards — the board expands when you do.</p>
+    <div class="row" style="margin-bottom:10px">
+      <button class="small" id="viewGrid" aria-pressed="true">Grid</button>
+      <button class="small" id="viewList" aria-pressed="false">List</button>
+      <span class="grow"></span>
+      <button class="small danger" id="clearBoard">Clear board…</button>
+    </div>
+    <div id="boardGrid"></div>
+    <div id="boardList" hidden></div>
+    <div class="divider"></div>
+    <div id="cellPane"><p class="empty">Select a cell to work with its cards.</p></div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section class="panel" id="p-library" role="tabpanel" aria-label="Library" tabindex="0" hidden>
+    <h2>Library</h2>
+    <p class="hint">Keep books and passages here. Paste text or upload a .txt / .md / .html file from this device.</p>
+    <div class="row">
+      <button class="primary" id="addDocPaste">Paste a passage</button>
+      <label for="fileUp" class="switch" style="margin:0"><span>or upload file</span></label>
+      <input type="file" id="fileUp" accept=".txt,.md,.markdown,.html,.htm" style="width:auto;border:none;padding:0" aria-label="Upload a .txt, .md, or .html file">
+    </div>
+    <div class="stub" style="margin-top:8px">Stubbed in v1 (named, not silent): .docx / .pdf parsing, OneDrive, Google Drive, Whisper voice dictation.</div>
+    <div class="divider"></div>
+    <div id="docList"></div>
+    <div id="reader" hidden></div>
+  </section>
+
+  <!-- RETRIEVE -->
+  <section class="panel" id="p-retrieve" role="tabpanel" aria-label="Retrieve" tabindex="0" hidden>
+    <h2>Retrieve</h2>
+    <p class="hint">Keyword search across your library and cards. Ranked by how many of your words each item shares.</p>
+    <div class="row">
+      <input type="search" class="grow" id="q" placeholder="Search your material…" aria-label="Search query">
+      <button class="primary" id="doSearch">Search</button>
+      <button class="small" id="remind">Remind me</button>
+    </div>
+    <label class="switch" style="margin-top:12px">
+      <input type="checkbox" id="genToggle" style="width:auto"> Grounded answer (asks Claude, cites your material)
+    </label>
+    <p class="hint" id="genNote" style="margin-top:4px">Off by default. When on, an answer is drawn only from your search hits and cited to them.</p>
+    <div id="genOut" aria-live="polite"></div>
+    <div class="divider"></div>
+    <div id="results"><p class="empty">Type a word and search.</p></div>
+  </section>
+
+  <!-- STUDY -->
+  <section class="panel" id="p-study" role="tabpanel" aria-label="Study" tabindex="0" hidden>
+    <h2>Study</h2>
+    <div class="subtabs" role="tablist" aria-label="Study sections">
+      <button role="tab" aria-selected="true" data-sub="notes">Notes</button>
+      <button role="tab" aria-selected="false" data-sub="journal">Journal</button>
+      <button role="tab" aria-selected="false" data-sub="glossary">Glossary</button>
+    </div>
+    <div id="studyBody"></div>
+  </section>
+
+  <!-- SESSION -->
+  <section class="panel" id="p-session" role="tabpanel" aria-label="Session" tabindex="0" hidden>
+    <h2>Session</h2>
+    <p class="hint">Save where you left off, and carry your material in and out as JSON.</p>
+    <div class="row">
+      <button class="primary" id="saveSnap">Save snapshot</button>
+      <button id="exportBtn">Export JSON</button>
+      <button id="importBtn">Import JSON…</button>
+      <button id="deleteBtn">Delete JSON</button>
+    </div>
+    <div id="sessionInfo" style="margin-top:12px"></div>
+    <div id="ioArea"></div>
+    <div class="divider"></div>
+    <h3 style="font-size:15px;margin:0 0 6px">Activity log</h3>
+    <div id="logView"></div>
+    <div class="divider"></div>
+    <h3 style="font-size:15px;margin:0 0 6px">Not in this build</h3>
+    <div class="stublist">
+      <div class="stub">Feedback wall — production (Grok) copy only in v1.</div>
+      <div class="stub">OneDrive / Google Drive import — device upload is the v1 path.</div>
+      <div class="stub">.docx / .pdf parsing · Whisper dictation.</div>
+      <div class="stub">Neighborhood retrieve · vector/embedding search — keyword retrieve only.</div>
+      <div class="stub">Cross-device sync — this account stores per-browser; JSON export is the bridge.</div>
+    </div>
+  </section>
+
+  <!-- ASSISTANT -->
+  <section class="panel" id="p-assistant" role="tabpanel" aria-label="Assistant" tabindex="0" hidden>
+    <h2>Assistant</h2>
+    <p class="hint">A resident helper that reads your library and cards. Ask a question, or tell it to make a card or a note. It answers only from your own material and cites what it used.</p>
+    <div class="row" style="margin-bottom:10px">
+      <label class="switch"><input type="checkbox" id="autoRead" style="width:auto"> Read replies aloud</label>
+      <button class="small" id="voiceStop">Stop voice</button>
+      <label class="switch" style="gap:6px">Read by:
+        <select id="readModeSel" style="width:auto" aria-label="Read by word, sentence, or entire text">
+          <option value="word">Word</option>
+          <option value="sentence">Sentence</option>
+          <option value="full">Entire text</option>
+        </select>
+      </label>
+      <label class="switch" style="gap:6px">Voice:
+        <select id="voiceSel" style="width:auto;max-width:220px" aria-label="Choose a voice"></select>
+      </label>
+      <span class="grow"></span>
+      <span style="font-size:13px;font-weight:600;color:var(--ink-soft)">Reading tint:</span>
+      <button class="tintbtn" id="tint-default" aria-label="Default (no tint)" title="Default" style="background:var(--surface-2)"></button>
+      <button class="tintbtn" id="tint-yellow" aria-label="Yellow tint" title="Yellow" style="background:#fff3b8"></button>
+      <button class="tintbtn" id="tint-teal" aria-label="Teal tint" title="Teal" style="background:#d3efe9"></button>
+      <button class="tintbtn" id="tint-cream" aria-label="Cream tint" title="Cream" style="background:#f9eed7"></button>
+    </div>
+    <div id="asstThread" role="log" aria-live="polite"></div>
+    <div class="row" style="margin-top:12px">
+      <input type="text" class="grow" id="asstInput" placeholder="Ask, or say "make a card about…"" aria-label="Message the assistant">
+      <button class="primary" id="asstSend">Send</button>
+    </div>
+    <div class="stub" style="margin-top:8px">Uses Claude on your account; asks your consent on first use. It can create cards and notes for you — everything it does is logged.</div>
+  </section>
+
+  <div class="foot">
+    <span>Sentinel Forge Study Workstation · study-workstation-web · practice twin. Works alongside the Grok copy — material moves between them by JSON export, not a shared database.</span>
+    <span class="mono">Retrieve = the retrieve stage of RAG (store → retrieve). No embeddings, no BM25.</span>
+    <span>Design follows the BDA Dyslexia Style Guide (2023), the UK Home Office accessibility posters, and W3C COGA guidance. Full accessibility credits and SDLC documentation: README.md.</span>
+  </div>
+</div>
+
+<div id="toast" hidden role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ---------- state ---------- */
+const KEY="gridindex-v1";
+const COLS=Array.from({length:26},(_,i)=>String.fromCharCode(65+i));
+const blank=()=>({records:[],documents:[],notes:[],journal:[],glossary:[],session:null,log:[],snapshots:[]});
+let STATE=blank();
+
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){STATE=Object.assign(blank(),JSON.parse(raw));}}
+  catch(e){STATE=blank();}
+  if(!STATE.records.length && !STATE.documents.length) seed();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(STATE));}catch(e){}}
+function uid(p){return p+"-"+Math.random().toString(36).slice(2,8)+"-"+Date.now().toString(36);}
+function now(){return Date.now();}
+function logIt(text){STATE.log.unshift({id:uid("l"),at:now(),text});STATE.log=STATE.log.slice(0,100);}
+
+function seed(){
+  const d={id:uid("d"),title:"Sample — Arrays and Retrieval",
+    body:"# Arrays\nAn array stores items in a fixed order, each reachable by an index. Reading item i is a constant-time operation because the position is computed directly.\n\n# Retrieval\nRetrieval means finding stored items that match a query. A simple method scores each item by how many query words it shares, then ranks by that score. This is the retrieve step that comes before any generation.",
+    chapters:[],createdAt:now(),updatedAt:now()};
+  d.chapters=splitChapters(d.body);
+  STATE.documents.push(d);
+  const c=newCard({title:"Sample — retrieval is store then rank",body:"Retrieval finds and ranks stored items by shared query words. It runs before generation.",coord:"D3",sourceDocId:d.id,zone:"GREEN"});
+  STATE.records.push(c);
+  logIt("Seeded a sample document and card (examples — edit or clear).");
+  save();
+}
+
+/* ---------- helpers ---------- */
+function tokens(str,minLen){const m=minLen||2;return (str||"").toLowerCase().split(/[^a-z0-9]+/).filter(t=>t.length>m);}
+function tokenSet(str,minLen){return new Set(tokens(str,minLen));}
+function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function fmtDate(ms){try{return new Date(ms).toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});}catch(e){return String(ms);}}
+function loadDots(n){const f=Math.max(0,Math.min(5,Math.round(n/2)));
+  return '<span title="Cognitive load '+n+' of 10" aria-label="Cognitive load '+n+' of 10" style="letter-spacing:2px">'+"●".repeat(f)+"○".repeat(5-f)+"</span>";}
+let toastTimer=null;
+function toast(msg,undoFn){const t=document.getElementById("toast");
+  t.innerHTML=esc(msg)+(undoFn?' <button id="undoBtn">Undo</button>':"");
+  t.hidden=false;clearTimeout(toastTimer);
+  if(undoFn)document.getElementById("undoBtn").addEventListener("click",()=>{try{undoFn();}finally{t.hidden=true;}});
+  toastTimer=setTimeout(()=>{t.hidden=true;},undoFn?8000:4500);}
+
+function newCard(o){o=o||{};return{
+  id:o.id||uid("n"), title:o.title||"Untitled record", body:o.body||"",
+  coord:/^[A-Z]\d{1,3}$/.test(String(o.coord||"").toUpperCase())&&parseInt(String(o.coord).slice(1))>=1?String(o.coord).toUpperCase():"D3", glyph:o.glyph||"process",
+  status:o.status||"active", petal:o.petal||"frameworks", version:o.version||1,
+  createdAt:o.createdAt||now(), updatedAt:o.updatedAt||now(),
+  zone:o.zone||"GREEN", cognitiveLoad:Number.isInteger(o.cognitiveLoad)?o.cognitiveLoad:5,
+  sourceDocId:o.sourceDocId||"", parentId:o.parentId
+};}
+function upsertCard(o){
+  const ex=STATE.records.find(r=>r.id===o.id);
+  if(ex){Object.assign(ex,o);ex.version=(ex.version||1)+1;ex.updatedAt=now();return ex;}
+  const c=newCard(o);STATE.records.push(c);return c;
+}
+function listAt(coord){return STATE.records.filter(r=>r.coord===coord)
+  .sort((a,b)=> b.updatedAt-a.updatedAt || a.id.localeCompare(b.id,"en"));}
+function getRowsToRender(buf){
+  const b=buf||3;
+  const nums=STATE.records.map(r=>parseInt(r.coord.slice(1))).filter(n=>n>=1&&!isNaN(n));
+  const max=nums.length?Math.max(...nums):6;
+  const rows=[];for(let i=1;i<=max+b;i++)rows.push(i);
+  return rows;
+}
+
+/* ---------- chapter split ---------- */
+function splitChapters(body){
+  const lines=(body||"").split(/\r?\n/);
+  const heads=[]; // {i,title}
+  lines.forEach((ln,i)=>{
+    if(/^#{1,3}\s+/.test(ln)) heads.push({i,title:ln.replace(/^#{1,3}\s+/,"").trim()});
+    else if(/\b(chapter|unit|module)\s+\d+/i.test(ln) && ln.trim().length<80) heads.push({i,title:ln.trim()});
+  });
+  const paginate=txt=>{const w=txt.split(/\s+/).filter(Boolean);const pages=[];for(let k=0;k<w.length;k+=220)pages.push(w.slice(k,k+220).join(" "));return pages.length?pages:[""];};
+  if(!heads.length) return [{title:"Full text",pages:paginate(body)}];
+  const ch=[];
+  for(let h=0;h<heads.length;h++){
+    const start=heads[h].i, end=(h+1<heads.length)?heads[h+1].i:lines.length;
+    const text=lines.slice(start+1,end).join("\n").trim();
+    ch.push({title:heads[h].title||("Section "+(h+1)),pages:paginate(text)});
+  }
+  return ch;
+}
+function stripHTML(text){try{return new DOMParser().parseFromString(text,"text/html").body.textContent||"";}catch(e){return text;}}
+
+/* ---------- retrieve (spec §2) ---------- */
+function snippet(body,qToks){
+  const low=(body||"").toLowerCase();let idx=-1;
+  for(const t of qToks){const p=low.indexOf(t);if(p>=0){idx=p;break;}}
+  const start=idx<0?0:Math.max(0,idx-40);
+  return (body||"").slice(start,start+220);
+}
+function retrieve(query){
+  const qToks=tokens(query,2); if(!qToks.length) return [];
+  const out=[];
+  const scoreBlob=(blob)=>{const set=tokenSet(blob,2);let s=0;for(const t of new Set(qToks)) if(set.has(t)) s++;return s;};
+  STATE.records.forEach(r=>{const s=scoreBlob(r.title+" "+r.body);if(s>0)out.push({id:r.id,kind:"record",title:r.title,snippet:snippet(r.body||r.title,qToks),score:s,coord:r.coord});});
+  STATE.documents.forEach(d=>{const s=scoreBlob(d.title+" "+d.body);if(s>0)out.push({id:d.id,kind:"document",title:d.title,snippet:snippet(d.body,qToks),score:s});});
+  STATE.notes.forEach(n=>{const s=scoreBlob((n.title||"")+" "+n.body);if(s>0)out.push({id:n.id,kind:"note",title:n.title||"Note",snippet:snippet(n.body,qToks),score:s});});
+  STATE.journal.forEach(j=>{const t=fmtDate(j.at);const s=scoreBlob(t+" "+j.body);if(s>0)out.push({id:j.id,kind:"journal",title:t,snippet:snippet(j.body,qToks),score:s});});
+  STATE.glossary.forEach(g=>{const s=scoreBlob(g.term+" "+g.definition);if(s>0)out.push({id:g.id,kind:"term",title:g.term,snippet:snippet(g.definition,qToks),score:s});});
+  out.sort((a,b)=> b.score-a.score || a.title.localeCompare(b.title,"en") || a.id.localeCompare(b.id,"en"));
+  return out.slice(0,12);
+}
+function findRelated(card){
+  const base=tokenSet(card.title+" "+card.body,3);
+  return STATE.records.filter(r=>r.id!==card.id).filter(r=>{
+    if(r.coord===card.coord) return true;
+    if(r.petal===card.petal) return true;
+    const s=tokenSet(r.title+" "+r.body,3);let shared=0;for(const t of base) if(s.has(t)) shared++;
+    return shared>=2;
+  });
+}
+
+/* ---------- tabs ---------- */
+const TABS=[["board","Board"],["library","Library"],["retrieve","Retrieve"],["assistant","Assistant"],["study","Study"],["session","Session"]];
+const tabsEl=document.getElementById("tabs");
+TABS.forEach(([id,label],i)=>{
+  const b=document.createElement("button");b.className="tab";b.role="tab";b.textContent=label;
+  b.id="tab-"+id;b.setAttribute("aria-controls","p-"+id);b.setAttribute("aria-selected",i===0);b.tabIndex=i===0?0:-1;
+  b.addEventListener("click",()=>selectTab(id));
+  b.addEventListener("keydown",e=>{let n=null;const idx=TABS.findIndex(t=>t[0]===id);
+    if(e.key==="ArrowRight")n=(idx+1)%TABS.length;if(e.key==="ArrowLeft")n=(idx-1+TABS.length)%TABS.length;
+    if(n!=null){e.preventDefault();const nid=TABS[n][0];document.getElementById("tab-"+nid).focus();selectTab(nid);}});
+  tabsEl.appendChild(b);
+});
+function selectTab(id){
+  TABS.forEach(([t])=>{const on=t===id;document.getElementById("tab-"+t).setAttribute("aria-selected",on);
+    document.getElementById("tab-"+t).tabIndex=on?0:-1;document.getElementById("p-"+t).hidden=!on;});
+  if(id==="board")renderBoard();if(id==="library")renderLibrary();if(id==="study")renderStudy();if(id==="session")renderSession();if(id==="assistant")renderAssistant();
+}
+
+/* ---------- BOARD ---------- */
+let selCoord=null, boardView="grid";
+document.getElementById("viewGrid").addEventListener("click",()=>{boardView="grid";renderBoard();});
+document.getElementById("viewList").addEventListener("click",()=>{boardView="list";renderBoard();});
+document.getElementById("clearBoard").addEventListener("click",()=>{
+  if(!STATE.records.length)return;
+  if(confirm("Clear all "+STATE.records.length+" cards from the board? Documents and notes stay.")){
+    const backup=STATE.records;STATE.records=[];selCoord=null;logIt("Cleared the board.");save();renderBoard();
+    toast("Board cleared.",()=>{STATE.records=backup;save();renderBoard();});}
+});
+function renderBoard(){
+  const grid=document.getElementById("boardGrid"),list=document.getElementById("boardList");
+  document.getElementById("viewGrid").setAttribute("aria-pressed",boardView==="grid");
+  document.getElementById("viewList").setAttribute("aria-pressed",boardView==="list");
+  grid.hidden=boardView!=="grid";list.hidden=boardView==="grid";
+  if(boardView==="grid"){
+    const rows=getRowsToRender(3);
+    grid.className="board";grid.innerHTML="";
+    grid.appendChild(cellDiv("gh",""));
+    COLS.forEach(c=>grid.appendChild(cellDiv("gh",c)));
+    rows.forEach(r=>{
+      grid.appendChild(cellDiv("gh",String(r)));
+      COLS.forEach(c=>{
+        const coord=c+r, stack=listAt(coord), b=document.createElement("button");
+        b.className="cell"+(stack.length?" filled":"")+(selCoord===coord?" sel":"");
+        b.setAttribute("aria-label",coord+(stack.length?(", "+stack.length+" card"+(stack.length>1?"s":"")+", zone "+stack[0].zone+", top: "+stack[0].title):", empty"));
+        if(stack.length){const face=stack[0];
+          b.innerHTML='<span class="cc">'+coord+'</span><span class="ct">'+esc(face.title)+'</span>'+
+            (stack.length>1?'<span class="badge">'+stack.length+'</span>':'<span class="zdot z-'+face.zone+'" aria-hidden="true"></span>');
+        } else b.innerHTML='<span class="cc">'+coord+'</span>';
+        b.addEventListener("click",()=>{selCoord=coord;renderBoard();renderCell();});
+        grid.appendChild(b);
+      });
+    });
+  } else {
+    list.innerHTML="";const all=[...STATE.records].sort((a,b)=>a.coord.localeCompare(b.coord,"en")||b.updatedAt-a.updatedAt);
+    if(!all.length){list.innerHTML='<p class="empty">No cards yet. Switch to Grid and tap a cell to add one.</p>';}
+    all.forEach(c=>list.appendChild(cardItem(c)));
+  }
+  renderCell();
+}
+function cellDiv(cls,txt){const d=document.createElement("div");d.className=cls;d.textContent=txt;return d;}
+function renderCell(){
+  const pane=document.getElementById("cellPane");
+  if(!selCoord){pane.innerHTML='<p class="empty">Select a cell to work with its cards.</p>';return;}
+  const stack=listAt(selCoord);
+  let h='<div class="row"><strong>Cell '+selCoord+'</strong><span class="grow"></span>'+
+    '<button class="small primary" id="addCard">Add card here</button></div>';
+  if(!stack.length) h+='<p class="empty" style="margin-top:10px">Empty cell. Add the first card.</p>';
+  pane.innerHTML=h;
+  const box=document.createElement("div");pane.appendChild(box);
+  stack.forEach(c=>box.appendChild(cardItem(c,true)));
+  document.getElementById("addCard").addEventListener("click",()=>editCard(null,selCoord));
+}
+function cardItem(c,showBranch){
+  const el=document.createElement("div");el.className="item";
+  el.innerHTML='<h3>'+esc(c.title)+'</h3>'+
+    '<div class="meta"><span class="mono">'+c.coord+'</span><span class="pill '+c.zone+'">'+c.zone+'</span>'+
+    loadDots(c.cognitiveLoad)+'<span>v'+c.version+'</span>'+(c.sourceDocId?'<span class="cite">sourced</span>':'')+'</div>'+
+    (c.asstReason?'<div class="meta" style="font-style:italic;opacity:0.75;font-size:12px;margin-top:3px">🤖 '+esc(c.asstReason)+'</div>':'')+
+    (c.body?'<div class="body">'+esc(c.body)+'</div>':'');
+  const row=document.createElement("div");row.className="row";row.style.marginTop="10px";
+  const ed=btn("Edit","small",()=>editCard(c));row.appendChild(ed);
+  if(showBranch){row.appendChild(btn("Branch","small",()=>branchCard(c)));
+    row.appendChild(btn("Find related","small",()=>relatedCard(c)));}
+  row.appendChild(btn("Delete","small danger",()=>{const removed=c;
+    STATE.records=STATE.records.filter(r=>r.id!==c.id);logIt("Deleted card: "+c.title);save();renderBoard();
+    toast("Card deleted.",()=>{STATE.records.push(removed);save();renderBoard();});}));
+  el.appendChild(row);
+  return el;
+}
+function btn(label,cls,fn){const b=document.createElement("button");b.className=cls;b.textContent=label;b.addEventListener("click",fn);return b;}
+function editCard(card,coord){
+  const pane=document.getElementById("cellPane");
+  const c=card||{coord:coord};
+  pane.innerHTML='<h3 style="margin:0 0 8px">'+(card?"Edit card":"New card at "+c.coord)+'</h3>';
+  const f=document.createElement("div");
+  f.innerHTML=
+    '<label for="ctitle">Title</label><input type="text" id="ctitle" value="'+esc(c.title||"")+'">'+
+    '<label for="cbody">Body</label><textarea id="cbody">'+esc(c.body||"")+'</textarea>'+
+    '<div class="row"><div class="grow"><label for="czone">Zone</label><select id="czone">'+
+      ["GREEN","YELLOW","RED"].map(z=>'<option '+((c.zone||"GREEN")===z?"selected":"")+'>'+z+'</option>').join("")+'</select></div>'+
+    '<div class="grow"><label for="cload">Cognitive load (1–10)</label><input type="text" id="cload" value="'+(c.cognitiveLoad||5)+'"></div>'+
+    '<div class="grow"><label for="ccoord">Cell (e.g. A1, Z42)</label><input type="text" id="ccoord" value="'+esc(c.coord||"D3")+'"></div></div>';
+  pane.appendChild(f);
+  const row=document.createElement("div");row.className="row";row.style.marginTop="12px";
+  row.appendChild(btn("Save","primary",()=>{
+    const coordV=document.getElementById("ccoord").value.trim().toUpperCase();
+    if(!/^[A-Z]\d{1,3}$/.test(coordV)||parseInt(coordV.slice(1))<1){toast("Cell must be A–Z followed by a row number (e.g. A1, Z42).");return;}
+    let load=parseInt(document.getElementById("cload").value,10);if(!(load>=1&&load<=10))load=5;
+    const data={id:card?card.id:undefined,title:document.getElementById("ctitle").value.trim()||"Untitled record",
+      body:document.getElementById("cbody").value,zone:document.getElementById("czone").value,
+      cognitiveLoad:load,coord:coordV,sourceDocId:c.sourceDocId||""};
+    const saved=upsertCard(data);logIt((card?"Updated":"Created")+" card: "+saved.title);selCoord=saved.coord;save();renderBoard();
+  }));
+  row.appendChild(btn("Cancel","small",()=>renderCell()));
+  pane.appendChild(row);
+  document.getElementById("ctitle").focus();
+}
+function branchCard(c){
+  ["Define","Effect","Next"].forEach(lab=>{
+    STATE.records.push(newCard({title:c.title+" — "+lab,body:"",coord:c.coord,parentId:c.id,zone:c.zone}));
+  });
+  logIt("Branched "+c.title+" into Define / Effect / Next.");save();renderBoard();
+}
+function relatedCard(c){
+  const rel=findRelated(c);const pane=document.getElementById("cellPane");
+  pane.innerHTML='<div class="row"><strong>Related to: '+esc(c.title)+'</strong><span class="grow"></span>'+
+    '<button class="small" id="backCell">Back</button></div>';
+  const box=document.createElement("div");pane.appendChild(box);
+  if(!rel.length)box.innerHTML='<p class="empty" style="margin-top:10px">No related cards found (same cell, same topic, or ≥2 shared words).</p>';
+  rel.forEach(r=>box.appendChild(cardItem(r)));
+  document.getElementById("backCell").addEventListener("click",renderCell);
+}
+
+/* ---------- LIBRARY ---------- */
+document.getElementById("addDocPaste").addEventListener("click",()=>docForm());
+document.getElementById("fileUp").addEventListener("change",e=>{
+  const file=e.target.files[0];if(!file)return;const rd=new FileReader();
+  rd.onload=()=>{let text=String(rd.result||"");if(/\.html?$/i.test(file.name))text=stripHTML(text);
+    addDoc(file.name.replace(/\.[^.]+$/,""),text);};
+  rd.readAsText(file);e.target.value="";
+});
+function addDoc(title,body){
+  const d={id:uid("d"),title:title||"Untitled document",body:body||"",chapters:[],createdAt:now(),updatedAt:now()};
+  d.chapters=splitChapters(d.body);STATE.documents.unshift(d);logIt("Added document: "+d.title);save();renderLibrary();
+}
+function docForm(){
+  const rd=document.getElementById("reader");rd.hidden=false;
+  rd.innerHTML='<h3 style="margin:0 0 8px">Paste a passage</h3>'+
+    '<label for="dtitle">Title</label><input type="text" id="dtitle" placeholder="e.g. Chapter 3 notes">'+
+    '<label for="dbody">Text</label><textarea id="dbody" style="min-height:160px"></textarea>';
+  const row=document.createElement("div");row.className="row";row.style.marginTop="10px";
+  row.appendChild(btn("Add to library","primary",()=>{
+    const t=document.getElementById("dtitle").value.trim(),b=document.getElementById("dbody").value;
+    if(!b.trim()){toast("Paste some text first.");return;}addDoc(t,b);}));
+  row.appendChild(btn("Cancel","small",()=>{rd.hidden=true;}));
+  rd.appendChild(row);document.getElementById("dtitle").focus();
+}
+function renderLibrary(){
+  const list=document.getElementById("docList");list.innerHTML="";
+  if(!STATE.documents.length){list.innerHTML='<p class="empty">No documents yet. Paste a passage or upload a file.</p>';return;}
+  STATE.documents.forEach(d=>{
+    const el=document.createElement("div");el.className="item";
+    const chapters=d.chapters&&d.chapters.length?d.chapters:splitChapters(d.body);
+    const pages=chapters.reduce((n,c)=>n+c.pages.length,0);
+    el.innerHTML='<h3>'+esc(d.title)+'</h3><div class="meta"><span>'+chapters.length+' chapter'+(chapters.length>1?"s":"")+'</span><span>'+pages+' page'+(pages>1?"s":"")+'</span></div>';
+    const row=document.createElement("div");row.className="row";row.style.marginTop="10px";
+    row.appendChild(btn("Read","small primary",()=>openReader(d)));
+    row.appendChild(btn("Delete","small danger",()=>{const removed=d;
+      STATE.documents=STATE.documents.filter(x=>x.id!==d.id);logIt("Deleted document: "+d.title);save();renderLibrary();
+      toast("Document deleted.",()=>{STATE.documents.unshift(removed);save();renderLibrary();});}));
+    el.appendChild(row);list.appendChild(el);
+  });
+}
+let rdState=null;
+function openReader(d){
+  const chapters=d.chapters&&d.chapters.length?d.chapters:splitChapters(d.body);
+  rdState={d,chapters,ch:0,pg:0};drawReader();
+  document.getElementById("reader").scrollIntoView({block:"start"});
+}
+function drawReader(){
+  const rd=document.getElementById("reader");rd.hidden=false;
+  const {d,chapters,ch,pg}=rdState;const chapter=chapters[ch];const pageText=chapter.pages[pg]||"";
+  const speech=("speechSynthesis" in window);
+  rd.innerHTML='<div class="row"><h3 style="margin:0">'+esc(d.title)+'</h3><span class="grow"></span><button class="small" id="closeReader">Close</button></div>'+
+    '<div class="meta" style="margin:6px 0"><span>Chapter '+(ch+1)+'/'+chapters.length+': '+esc(chapter.title)+'</span><span>Page '+(pg+1)+'/'+chapter.pages.length+'</span></div>'+
+    '<div class="body tintable" style="background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;min-height:120px">'+unitSpans(pageText,SET.readMode||"sentence")+'</div>';
+  const row=document.createElement("div");row.className="row";row.style.marginTop="10px";
+  row.appendChild(btn("◀ Prev","small",()=>{turn(-1);}));
+  row.appendChild(btn("Next ▶","small",()=>{turn(1);}));
+  if(speech){
+    const lbl=document.createElement("span");lbl.style.cssText="font-size:13px;font-weight:600;color:var(--ink-soft)";lbl.textContent="Read by:";row.appendChild(lbl);
+    [["word","Word"],["sentence","Sentence"],["full","Full"]].forEach(([k,label])=>{
+      const b=btn(label,"small",()=>{SET.readMode=k;saveSet();stopRead();drawReader();});
+      b.setAttribute("aria-pressed",String((SET.readMode||"sentence")===k));row.appendChild(b);});
+    row.appendChild(btn("🔊 Read aloud","small",()=>startRead(pageText,rd.querySelector(".body.tintable"))));
+    row.appendChild(btn("Stop","small",()=>stopRead()));
+  }
+  else row.appendChild(Object.assign(document.createElement("span"),{className:"stub",textContent:"Read-aloud unavailable in this browser."}));
+  applyTint();
+  row.appendChild(btn("Save page as note","small",()=>{addNote("From: "+d.title+" (ch "+(ch+1)+", p "+(pg+1)+")",pageText,d.id);toast("Saved to Study ▸ Notes.");}));
+  row.appendChild(btn("Save page as card","small",()=>{const c=upsertCard({title:d.title+" — ch"+(ch+1)+" p"+(pg+1),body:pageText,coord:"D3",sourceDocId:d.id});logIt("Card from document: "+c.title);save();toast("Saved as a card at "+c.coord+".");}));
+  rd.appendChild(row);
+  document.getElementById("closeReader").addEventListener("click",()=>{rd.hidden=true;stopRead();});
+}
+/* read-aloud granularity: word / sentence / full, with follow-along highlight */
+function sentSplit(text){return text.match(/[^.!?…]+[.!?…]+["')\]]*\s*|[^.!?…]+\s*$/g)||[text];}
+function unitSpans(text,mode){
+  if(mode==="word")return text.split(/\s+/).filter(Boolean).map((p,i)=>'<span class="ru" data-ru="'+i+'">'+esc(p)+'</span>').join(" ");
+  if(mode==="sentence")return sentSplit(text).map((p,i)=>'<span class="ru" data-ru="'+i+'">'+esc(p)+'</span>').join("");
+  return esc(text);
+}
+let readRun={on:false,units:[],idx:0,box:null};
+function startRead(text,box){stopRead();
+  if(!("speechSynthesis" in window))return;
+  const mode=SET.readMode||"sentence";
+  if(mode==="full"){try{const u=new SpeechSynthesisUtterance(text);u.rate=0.95;const v=getVoice();if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}return;}
+  const units=(mode==="word")?text.split(/\s+/).filter(Boolean):sentSplit(text);
+  readRun={on:true,units:units,idx:0,box:box||null};speakUnit();}
+function speakUnit(){if(!readRun.on)return;const i=readRun.idx;
+  if(i>=readRun.units.length){stopRead();return;}
+  rHl(i);
+  try{const u=new SpeechSynthesisUtterance(readRun.units[i]);u.rate=0.95;const v=getVoice();if(v)u.voice=v;
+    u.onend=()=>{if(readRun.on){readRun.idx++;speakUnit();}};
+    speechSynthesis.speak(u);}catch(e){stopRead();}}
+function rHl(i){const scope=readRun.box||document;
+  scope.querySelectorAll(".ru.on").forEach(x=>x.classList.remove("on"));
+  const el=scope.querySelector('.ru[data-ru="'+i+'"]');if(el)el.classList.add("on");}
+function stopRead(){readRun.on=false;try{speechSynthesis.cancel();}catch(e){}
+  document.querySelectorAll(".ru.on").forEach(x=>x.classList.remove("on"));readRun.box=null;}
+
+function turn(dir){
+  const {chapters}=rdState;let {ch,pg}=rdState;pg+=dir;
+  if(pg<0){if(ch>0){ch--;pg=chapters[ch].pages.length-1;}else pg=0;}
+  else if(pg>=chapters[ch].pages.length){if(ch<chapters.length-1){ch++;pg=0;}else pg=chapters[ch].pages.length-1;}
+  rdState.ch=ch;rdState.pg=pg;stopRead();drawReader();
+}
+
+/* ---------- RETRIEVE ---------- */
+document.getElementById("doSearch").addEventListener("click",runSearch);
+document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")runSearch();});
+document.getElementById("remind").addEventListener("click",showReminder);
+let lastQuery="", lastHits=[];
+function runSearch(){
+  const q=document.getElementById("q").value;lastQuery=q;const hits=retrieve(q);lastHits=hits;
+  const box=document.getElementById("results");box.innerHTML="";
+  document.getElementById("genOut").innerHTML="";
+  if(!tokens(q,2).length){box.innerHTML='<p class="empty">Enter a word longer than two letters.</p>';return;}
+  if(!hits.length){box.innerHTML='<p class="empty">No matches. Nothing found for "'+esc(q)+'".</p>';return;}
+  hits.forEach(h=>{
+    const el=document.createElement("div");el.className="item";
+    el.innerHTML='<h3>'+esc(h.title)+'</h3><div class="meta"><span class="cite">'+h.kind+'</span>'+
+      (h.coord?'<span class="mono">'+h.coord+'</span>':'')+'<span>score '+h.score+'</span></div>'+
+      '<div class="snippet">'+esc(h.snippet)+(h.snippet.length>=220?"…":"")+'</div>';
+    const row=document.createElement("div");row.className="row";row.style.marginTop="10px";
+    row.appendChild(btn("Pin as card","small primary",()=>{
+      const c=upsertCard({title:h.title,body:h.snippet,coord:h.coord||"D3",sourceDocId:h.kind==="document"?h.id:""});
+      logIt("Pinned "+h.kind+" as card: "+c.title);save();toast("Pinned to cell "+c.coord+".");}));
+    el.appendChild(row);box.appendChild(el);
+  });
+  if(document.getElementById("genToggle").checked) groundedAnswer(q,hits);
+}
+function showReminder(){
+  const box=document.getElementById("results");document.getElementById("genOut").innerHTML="";
+  const s=STATE.session;let h='<div class="item"><h3>Where you left off</h3>';
+  if(s&&s.selectedTitle)h+='<div class="body">Last card: '+esc(s.selectedTitle)+(s.selectedCoord?' ('+s.selectedCoord+')':'')+'</div>';
+  else h+='<div class="body">No saved snapshot yet.</div>';
+  const notes=STATE.notes.slice(0,3),jr=STATE.journal.slice(0,3);
+  if(notes.length){h+='<div class="meta" style="margin-top:8px">Recent notes</div>';notes.forEach(n=>h+='<div class="body">• '+esc(n.title||"Note")+'</div>');}
+  if(jr.length){h+='<div class="meta" style="margin-top:8px">Recent journal</div>';jr.forEach(j=>h+='<div class="body">• '+esc((j.body||"").slice(0,80))+'</div>');}
+  h+='</div>';box.innerHTML=h;
+}
+async function groundedAnswer(q,hits){
+  const out=document.getElementById("genOut");
+  out.innerHTML='<div class="banner">Thinking… drawing an answer only from your hits.</div>';
+  let sample=null;try{sample=await (window.claude&&window.claude.use?window.claude.use("sample"):null);}catch(e){sample=null;}
+  if(!sample){out.innerHTML='<div class="stub">Grounded answer unavailable on this view. Showing search results only.</div>';return;}
+  const ctx=hits.map(h=>"["+h.id+"] ("+h.kind+(h.coord?" "+h.coord:"")+") "+h.title+": "+h.snippet).join("\n");
+  const prompt="You are a study assistant. Answer the question using ONLY the passages below. After each sentence, cite the source id in brackets, e.g. ["+hits[0].id+"]. If the passages do not contain the answer, reply exactly: The library doesn't cover that. Do not use outside knowledge.\n\nPassages:\n"+ctx+"\n\nQuestion: "+q;
+  try{
+    const res=await sample([{role:"user",content:prompt}],{modelTier:"default"});
+    const text=(res&&res.text)?res.text:"(no answer)";
+    out.innerHTML='<div class="item"><h3>Grounded answer</h3><div class="body">'+esc(text)+'</div>'+
+      '<div class="meta" style="margin-top:8px">Cited from your material · <button class="small" id="genOff">turn off</button></div></div>';
+    document.getElementById("genOff").addEventListener("click",()=>{document.getElementById("genToggle").checked=false;out.innerHTML="";});
+  }catch(e){const code=(e&&e.code)||"error";
+    out.innerHTML='<div class="stub">'+
+      (code==="not_granted"?"This page doesn't have permission to ask Claude yet. Reload, search again, and choose Allow when the prompt appears.":
+       code==="rate_limited"?"Claude is busy right now. Wait a moment and try again.":
+       "Could not generate ("+esc(code)+"). Search results stand on their own above.")+'</div>';}
+}
+
+/* ---------- STUDY ---------- */
+let studySub="notes";
+document.querySelectorAll('.subtabs [data-sub]').forEach(b=>b.addEventListener("click",()=>{
+  studySub=b.dataset.sub;document.querySelectorAll('.subtabs [data-sub]').forEach(x=>x.setAttribute("aria-selected",x===b));renderStudy();
+}));
+function addNote(title,body,src){STATE.notes.unshift({id:uid("note"),title:title||"Note",body:body||"",createdAt:now(),updatedAt:now(),sourceDocId:src||""});logIt("Saved note: "+(title||"Note"));save();}
+function renderStudy(){
+  const b=document.getElementById("studyBody");b.innerHTML="";
+  if(studySub==="notes"){
+    b.appendChild(quickAdd("Note title","Note text",(t,x)=>{if(!x.trim())return false;addNote(t,x);return true;}));
+    if(!STATE.notes.length)b.appendChild(emptyEl("No notes yet."));
+    STATE.notes.forEach(n=>b.appendChild(rowItem(n.title||"Note",n.body,n.sourceDocId?"sourced":"",()=>{const rm=n;STATE.notes=STATE.notes.filter(x=>x.id!==n.id);save();renderStudy();toast("Note deleted.",()=>{STATE.notes.unshift(rm);save();renderStudy();});})));
+  } else if(studySub==="journal"){
+    b.appendChild(quickAdd(null,"What happened / what you learned",(_,x)=>{if(!x.trim())return false;STATE.journal.unshift({id:uid("j"),body:x,at:now()});logIt("Journal entry added.");save();return true;}));
+    if(!STATE.journal.length)b.appendChild(emptyEl("No journal entries yet."));
+    STATE.journal.forEach(j=>b.appendChild(rowItem(fmtDate(j.at),j.body,"",()=>{const rm=j;STATE.journal=STATE.journal.filter(x=>x.id!==j.id);save();renderStudy();toast("Journal entry deleted.",()=>{STATE.journal.unshift(rm);save();renderStudy();});})));
+  } else {
+    b.appendChild(quickAdd2("Term","Definition",(term,def)=>{if(!term.trim())return false;STATE.glossary.unshift({id:uid("t"),term,definition:def,sourceDocId:""});logIt("Glossary term: "+term);save();return true;}));
+    if(!STATE.glossary.length)b.appendChild(emptyEl("No glossary terms yet."));
+    STATE.glossary.forEach(g=>b.appendChild(rowItem(g.term,g.definition,"",()=>{const rm=g;STATE.glossary=STATE.glossary.filter(x=>x.id!==g.id);save();renderStudy();toast("Term deleted.",()=>{STATE.glossary.unshift(rm);save();renderStudy();});})));
+  }
+}
+function emptyEl(t){const d=document.createElement("div");d.className="empty";d.textContent=t;return d;}
+function rowItem(title,body,tag,del){const el=document.createElement("div");el.className="item";
+  el.innerHTML='<h3>'+esc(title)+'</h3>'+(tag?'<div class="meta"><span class="cite">'+tag+'</span></div>':'')+'<div class="body">'+esc(body)+'</div>';
+  el.appendChild(btn("Delete","small danger",del));return el;}
+function quickAdd(titlePh,bodyPh,fn){
+  const d=document.createElement("div");d.className="item";
+  d.innerHTML=(titlePh?'<input type="text" id="qaT" placeholder="'+titlePh+'" style="margin-bottom:8px">':'')+
+    '<textarea id="qaB" placeholder="'+bodyPh+'"></textarea>';
+  d.appendChild(btn("Add","primary small",()=>{const t=titlePh?document.getElementById("qaT").value.trim():"";
+    if(fn(t,document.getElementById("qaB").value))renderStudy();}));return d;
+}
+function quickAdd2(aPh,bPh,fn){
+  const d=document.createElement("div");d.className="item";
+  d.innerHTML='<input type="text" id="qaA" placeholder="'+aPh+'" style="margin-bottom:8px"><textarea id="qaB" placeholder="'+bPh+'"></textarea>';
+  d.appendChild(btn("Add","primary small",()=>{if(fn(document.getElementById("qaA").value.trim(),document.getElementById("qaB").value))renderStudy();}));return d;
+}
+
+/* ---------- SESSION ---------- */
+document.getElementById("saveSnap").addEventListener("click",()=>{
+  const top=selCoord?listAt(selCoord)[0]:null;
+  const snap={id:uid("snap"),at:now(),selectedId:top?top.id:null,selectedTitle:top?top.title:"",
+    selectedCoord:selCoord||"",query:lastQuery,recordCount:STATE.records.length,documentCount:STATE.documents.length,
+    logHead:STATE.log.slice(0,5).map(l=>l.text)};
+  STATE.session=snap;
+  if(!Array.isArray(STATE.snapshots))STATE.snapshots=[];
+  STATE.snapshots.unshift(snap);
+  STATE.snapshots=STATE.snapshots.slice(0,20);
+  logIt("Saved session snapshot.");save();renderSession();
+});
+document.getElementById("deleteBtn").addEventListener("click",deleteJSONForm);
+document.getElementById("exportBtn").addEventListener("click",exportJSON);
+document.getElementById("importBtn").addEventListener("click",importForm);
+function bundle(){return{records:STATE.records,documents:STATE.documents,glossary:STATE.glossary,
+  notes:STATE.notes,journal:STATE.journal,session:STATE.session,exportedAt:now()};}
+async function exportJSON(){
+  const data=JSON.stringify(bundle(),null,2);const io=document.getElementById("ioArea");
+  io.innerHTML='<div class="item"><h3>Export</h3><p class="hint">Your material as JSON — the bridge to the other copy.</p><textarea id="exp" readonly style="min-height:140px">'+esc(data)+'</textarea></div>';
+  document.getElementById("exp").focus();document.getElementById("exp").select();
+  let dl=null;try{dl=await (window.claude&&window.claude.use?window.claude.use("downloads"):null);}catch(e){dl=null;}
+  if(dl){try{await dl.save({filename:"grid-index-export.json",data});}catch(e){}}
+}
+function deleteJSONForm(){
+  const io=document.getElementById("ioArea");
+  const snaps=Array.isArray(STATE.snapshots)?STATE.snapshots:[];
+  if(!snaps.length){io.innerHTML='<div class="stub">No saved snapshots to delete. Hit "Save snapshot" first.</div>';return;}
+  io.innerHTML='<div class="item"><h3>Delete a snapshot</h3><p class="hint">Select a saved session to permanently remove it.</p><div id="snapDelList"></div></div>';
+  const list=document.getElementById("snapDelList");
+  snaps.forEach(s=>{
+    const row=document.createElement("div");row.className="item";
+    row.innerHTML='<div class="meta"><span class="mono">'+esc(fmtDate(s.at))+'</span>'+(s.selectedTitle?'<span> · card: <strong>'+esc(s.selectedTitle)+'</strong></span>':'')+
+      '<span> · '+s.recordCount+' cards, '+s.documentCount+' docs</span></div>'+
+      (s.logHead&&s.logHead.length?'<div class="body" style="font-size:12px;margin-top:4px">'+esc(s.logHead[0])+'</div>':'');
+    row.appendChild(btn("Delete","small danger",()=>{
+      const removed=s;
+      STATE.snapshots=STATE.snapshots.filter(x=>x.id!==s.id);
+      if(STATE.session&&STATE.session.id===s.id)STATE.session=STATE.snapshots[0]||null;
+      logIt("Deleted snapshot: "+fmtDate(s.at));save();
+      toast("Snapshot deleted.",()=>{STATE.snapshots.unshift(removed);save();deleteJSONForm();});
+      deleteJSONForm();
+    }));
+    list.appendChild(row);
+  });
+}
+function importForm(){
+  const io=document.getElementById("ioArea");
+  io.innerHTML='<div class="item"><h3>Import</h3><p class="hint">Paste a JSON bundle. Existing ids are kept; a collision gets a "-imp" suffix.</p><textarea id="imp" placeholder="Paste JSON here…" style="min-height:140px"></textarea></div>';
+  io.querySelector(".item").appendChild(btn("Import","primary small",()=>{
+    let data;try{data=JSON.parse(document.getElementById("imp").value);}catch(e){toast("That isn't valid JSON. Check the paste and try again.");return;}
+    let added=0;const seen=id=>STATE.records.some(r=>r.id===id)||STATE.documents.some(d=>d.id===id);
+    ["records","documents","notes","journal","glossary"].forEach(k=>{
+      if(Array.isArray(data[k]))data[k].forEach(o=>{if(o&&o.id&&seen(o.id))o.id=o.id+"-imp";
+        if(k==="records")STATE.records.push(newCard(o));else STATE[k].push(o);added++;});
+    });
+    logIt("Imported "+added+" items from JSON.");save();toast("Imported "+added+" items.");renderSession();renderBoard();
+  }));
+}
+function renderSession(){
+  const s=STATE.session,info=document.getElementById("sessionInfo");
+  if(s){info.innerHTML='<div class="banner">Welcome back. Last snapshot '+esc(fmtDate(s.at))+
+    (s.selectedTitle?' · card <strong>'+esc(s.selectedTitle)+'</strong>'+(s.selectedCoord?' ('+s.selectedCoord+')':''):'')+
+    ' · '+s.recordCount+' cards, '+s.documentCount+' documents.</div>';}
+  else info.innerHTML='<p class="hint">No snapshot yet. Save one to get a start-of-session review next time.</p>';
+  const lv=document.getElementById("logView");lv.innerHTML="";
+  if(!STATE.log.length)lv.appendChild(emptyEl("No activity yet."));
+  STATE.log.slice(0,20).forEach(l=>{const d=document.createElement("div");d.className="meta";d.style.padding="3px 0";
+    d.innerHTML='<span class="mono">'+esc(fmtDate(l.at))+'</span> '+esc(l.text);lv.appendChild(d);});
+  const snaps=Array.isArray(STATE.snapshots)?STATE.snapshots:[];
+  if(snaps.length){
+    const sh=document.createElement("div");sh.innerHTML='<div class="divider"></div><h3 style="font-size:15px;margin:0 0 6px">Saved snapshots ('+snaps.length+')</h3>';
+    snaps.forEach(snap=>{
+      const d=document.createElement("div");d.className="meta";d.style.cssText="padding:4px 0;flex-wrap:wrap";
+      d.innerHTML='<span class="mono">'+esc(fmtDate(snap.at))+'</span>'+(snap.selectedTitle?'<span> · <strong>'+esc(snap.selectedTitle)+'</strong>'+(snap.selectedCoord?' ('+snap.selectedCoord+')':'')+'</span>':'')+
+        '<span> · '+snap.recordCount+' cards</span>';
+      if(snap.logHead&&snap.logHead.length){const sub=document.createElement("div");sub.style.cssText="font-size:12px;color:var(--ink-faint);padding-left:4px;width:100%";sub.textContent=snap.logHead[0];d.appendChild(sub);}
+      sh.appendChild(d);
+    });
+    lv.after(sh);
+  }
+}
+
+/* ---------- settings: auto-read + reading tint ---------- */
+let SET={autoRead:true,tint:"default"};
+try{Object.assign(SET,JSON.parse(localStorage.getItem("gridindex-set")||"{}"));}catch(e){}
+function saveSet(){try{localStorage.setItem("gridindex-set",JSON.stringify(SET));}catch(e){}}
+function cleanMD(t){return (t||"")
+  .replace(/\*\*([^*]+)\*\*/g,"$1").replace(/__([^_]+)__/g,"$1")
+  .replace(/(^|\s)\*([^*\n]+)\*/g,"$1$2").replace(/`{1,3}([^`]*)`{1,3}/g,"$1")
+  .replace(/^#{1,6}\s+/gm,"");}
+function speak(text){if(!("speechSynthesis" in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.95;const v=getVoice();if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
+function applyTint(){
+  document.querySelectorAll(".tintable").forEach(el=>{
+    el.classList.remove("tint-yellow","tint-teal","tint-cream");
+    if(SET.tint!=="default")el.classList.add("tint-"+SET.tint);});
+  ["default","yellow","teal","cream"].forEach(t=>{const b=document.getElementById("tint-"+t);
+    if(b)b.setAttribute("aria-pressed",String(SET.tint===t));});
+  const ar=document.getElementById("autoRead");if(ar)ar.checked=!!SET.autoRead;
+}
+document.getElementById("autoRead").addEventListener("change",e=>{SET.autoRead=e.target.checked;saveSet();});
+document.getElementById("voiceStop").addEventListener("click",()=>{try{speechSynthesis.cancel();}catch(e){}});
+["default","yellow","teal","cream"].forEach(t=>{const b=document.getElementById("tint-"+t);
+  if(b)b.addEventListener("click",()=>{SET.tint=t;saveSet();applyTint();});});
+
+/* text size — five steps, remembered (BDA: let the reader set the size) */
+const ZOOMS=[0.9,1,1.1,1.25,1.4];
+if(typeof SET.zi!=="number"||SET.zi<0||SET.zi>4)SET.zi=1;
+if(!SET.readMode)SET.readMode="sentence";
+function applyZoom(){const w=document.querySelector(".wrap");if(w)w.style.zoom=ZOOMS[SET.zi];}
+document.getElementById("fontMinus").addEventListener("click",()=>{if(SET.zi>0){SET.zi--;saveSet();applyZoom();}});
+document.getElementById("fontPlus").addEventListener("click",()=>{if(SET.zi<ZOOMS.length-1){SET.zi++;saveSet();applyZoom();}});
+
+/* voice selection — lists the voices this device/Chrome provides */
+let VOICES=[];
+function getVoice(){if(!SET.voice)return null;for(const v of VOICES)if(v.name===SET.voice)return v;return null;}
+function fillVoiceSel(){const s=document.getElementById("voiceSel");if(!s)return;
+  const cur=SET.voice||"";
+  s.innerHTML='<option value="">Device default</option>'+VOICES.map(v=>
+    '<option value="'+esc(v.name)+'"'+(v.name===cur?" selected":"")+'>'+esc(v.name)+' ('+esc(v.lang)+')</option>').join("");}
+function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[];}catch(e){VOICES=[];}fillVoiceSel();}
+if("speechSynthesis" in window){try{speechSynthesis.onvoiceschanged=loadVoices;}catch(e){}loadVoices();}
+document.getElementById("voiceSel").addEventListener("change",e=>{SET.voice=e.target.value;saveSet();
+  if(e.target.value)speak("This is the voice you chose.");});
+document.getElementById("readModeSel").addEventListener("change",e=>{SET.readMode=e.target.value;saveSet();});
+
+/* ---------- ASSISTANT (resident, tool-using) ---------- */
+let asstBusy=false, asstActions=[];
+document.getElementById("asstSend").addEventListener("click",sendAsst);
+document.getElementById("asstInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendAsst();});
+function renderAssistant(){
+  const th=document.getElementById("asstThread");
+  if(!th.childElementCount) th.innerHTML='<div class="empty">Try: "What does my library say about retrieval?" · "Make a card at B2 summarizing arrays." · "Save a note reminding me to review chapter 1."</div>';
+  const ms=document.getElementById("readModeSel");if(ms)ms.value=SET.readMode||"sentence";
+  fillVoiceSel();
+}
+function asstBubble(who,text){const el=document.createElement("div");el.className="item";
+  el.innerHTML='<div class="meta"><span class="cite">'+esc(who)+'</span></div><div class="body'+(who==="assistant"?" tintable":"")+'">'+esc(text)+'</div>';
+  document.getElementById("asstThread").appendChild(el);applyTint();return el;}
+async function sendAsst(){
+  if(asstBusy)return;const inp=document.getElementById("asstInput");const q=inp.value.trim();if(!q)return;
+  const th=document.getElementById("asstThread");const em=th.querySelector(".empty");if(em)th.innerHTML="";
+  asstBubble("you",q);inp.value="";asstBusy=true;asstActions=[];
+  const think=asstBubble("assistant","Thinking…");
+  let sample=null;try{sample=await(window.claude&&window.claude.use?window.claude.use("sample"):null);}catch(e){sample=null;}
+  if(!sample){think.querySelector(".body").textContent="The assistant needs Claude access, which isn't available on this view. You can still use keyword Retrieve.";asstBusy=false;return;}
+  const tools=[
+    {name:"search",description:"Search the user's own library documents, cards, notes, journal and glossary by keywords. Returns up to 12 hits with id, kind, title, snippet, coord.",
+     inputSchema:{type:"object",properties:{query:{type:"string",description:"keywords to look up"}},required:["query"]},
+     execute:({query})=>retrieve(query||"").map(h=>({id:h.id,kind:h.kind,title:h.title,snippet:h.snippet,coord:h.coord||""}))},
+    {name:"createCard",description:"Create a note card on the board at a specific cell. Columns are A–Z, rows 1 and up (e.g. B3, Z42). Defaults to D3. Always pass a reason explaining why you chose that cell.",
+     inputSchema:{type:"object",properties:{title:{type:"string"},body:{type:"string"},coord:{type:"string"},sourceDocId:{type:"string"},reason:{type:"string",description:"One sentence explaining why you chose this cell."}},required:["title"]},
+     execute:(a)=>{const rawCoord=String(a.coord||"").toUpperCase();
+       const coord=/^[A-Z]\d{1,3}$/.test(rawCoord)&&parseInt(rawCoord.slice(1))>=1?rawCoord:"D3";
+       const c=upsertCard({title:a.title,body:a.body||"",coord,sourceDocId:a.sourceDocId||"",asstReason:a.reason||""});
+       logIt("Assistant created card: "+c.title);
+       asstActions.push('Created "'+c.title+'" at '+c.coord+(a.reason?' — '+a.reason:''));
+       save();return{ok:true,id:c.id,coord:c.coord};}},
+    {name:"saveNote",description:"Save a study note for the user.",
+     inputSchema:{type:"object",properties:{title:{type:"string"},body:{type:"string"}},required:["body"]},
+     execute:(a)=>{addNote(a.title||"Note",a.body||"");asstActions.push('Saved note "'+(a.title||"Note")+'"');return{ok:true};}},
+    {name:"readSession",description:"Read the user's saved session snapshots and recent activity log. Use this to remind the user where they left off, summarise past sessions, or answer questions like 'what did I work on last time?'",
+     inputSchema:{type:"object",properties:{limit:{type:"number",description:"how many recent snapshots to return (default 5)"}},required:[]},
+     execute:(a)=>{
+       const limit=Math.min(20,Math.max(1,Number((a&&a.limit)||5)));
+       const snaps=(Array.isArray(STATE.snapshots)?STATE.snapshots:[]).slice(0,limit).map(s=>({
+         savedAt:fmtDate(s.at),lastCard:s.selectedTitle||"(none)",cell:s.selectedCoord||"",
+         cards:s.recordCount,docs:s.documentCount,
+         recentActions:(s.logHead||[]).slice(0,3)
+       }));
+       const log=STATE.log.slice(0,10).map(l=>({at:fmtDate(l.at),text:l.text}));
+       return{snapshots:snaps,recentLog:log,currentCards:STATE.records.length,currentDocs:STATE.documents.length};}}
+  ];
+  const sys="You are the resident study assistant inside a calm, neurodivergent-friendly workstation for a reader with ADHD and dyslexia. Be brief and plain. For any study question, FIRST call search and answer only from the results, citing source ids in brackets like [n-ab12]. If search returns nothing relevant, say the library doesn't cover it — never invent facts about the user's books. When the user asks you to remember, capture, summarize into a card, or save a note, call createCard or saveNote, then confirm in one short sentence what you did. When the user asks what they worked on, where they left off, what happened in a past session, or anything about session or snapshot history, call readSession and summarise the results in plain language — include the date, last card, and any recent actions. Never guess past session details without calling readSession first.";
+  try{
+    const res=await sample([{role:"user",content:sys+"\n\nUser: "+q}],{tools:tools,modelTier:"default"});
+    const clean=cleanMD((res&&res.text)?res.text:"(no answer)");
+    const bodyEl=think.querySelector(".body");
+    bodyEl.innerHTML=unitSpans(clean,SET.readMode||"sentence");
+    applyTint();
+    const rrow=document.createElement("div");rrow.className="row";rrow.style.marginTop="8px";
+    rrow.appendChild(btn("🔊 Read","small",()=>startRead(clean,bodyEl)));
+    rrow.appendChild(btn("Stop","small",()=>stopRead()));
+    think.appendChild(rrow);
+    if(SET.autoRead)startRead(clean,bodyEl);
+    if(asstActions.length){const a=document.createElement("div");a.className="meta";a.style.marginTop="8px";
+      a.innerHTML=asstActions.map(x=>'✓ '+esc(x)).join(" &nbsp;·&nbsp; ");think.appendChild(a);}
+  }catch(e){const code=(e&&e.code)||"error";
+    think.querySelector(".body").textContent=
+      code==="not_granted"?"This page doesn't have permission to ask Claude yet. Reload the page, send your message again, and choose Allow when the permission prompt appears.":
+      code==="rate_limited"?"Claude is busy right now. Wait a moment and try again.":
+      "Couldn't complete that ("+code+"). Try rephrasing, or use keyword Retrieve.";}
+  asstBusy=false;save();
+}
+
+/* ---------- boot ---------- */
+load();
+if(STATE.session&&STATE.session.selectedCoord)selCoord=STATE.session.selectedCoord;
+renderBoard();
+applyTint();
+applyZoom();
+// show a returning-user banner on Board if a snapshot exists
+if(STATE.session&&STATE.session.selectedTitle){
+  const p=document.getElementById("p-board");const b=document.createElement("div");b.className="banner";
+  b.innerHTML='Welcome back — you last worked on <strong>'+esc(STATE.session.selectedTitle)+'</strong>'+(STATE.session.selectedCoord?' at '+STATE.session.selectedCoord:'')+'.';
+  p.insertBefore(b,p.children[2]);
+}
+</script>
+
+</body></html>
