@@ -1,0 +1,216 @@
+
+doc_id: "SF-WEB-REC-001" title: "Sentinel Forge Study Workstation — Recovery Record, Padding Audit, and Pseudocode" zone: "YELLOW" protocol: "Onset_Omega_1" artifact_type: "TECHNICAL_BLUEPRINT" cognitive_load: 5 timestamp: "2026-09-13T00:00:00Z" dependencies:
+"SENT-PROJ-A1-001"
+"COMP-FILE-001" tags:
+"study_workstation"
+"recovery_record"
+"pseudocode"
+"documentation_gate" status: "ACTIVE" author: "Shannon Brian Kelly + Claude" version: "1.0"
+
+Sentinel Forge Study Workstation — Record & Pseudocode
+What this is: the single-file web app (study-workstation.html) that runs as a Claude artifact. One HTML file holds three languages: HTML (structure), CSS (appearance), JavaScript (behavior). JSON is not a fourth language in the file — it is the data format the JavaScript uses to save to localStorage and to export/import sessions.
+Artifact URL: https://claude.ai/code/artifact/f8cd1878-1dde-4b78-876a-2bbec1535b08 Working version: artifact Version 12 (2026-09-13) Broken version: Versions 10–11
+
+1. Recovery record — what broke and why
+Item
+Detail
+Symptom
+Page loaded, but no tab buttons and no A1–G6 grid. Only the static Board frame showed.
+Trigger
+The edit that added the assistant's readSession tool (reading session JSON).
+Root cause
+That edit was pasted with curly "smart quotes" (” “) as JavaScript string delimiters in the saveNote and readSession tool definitions (script lines ~856–869). JavaScript only accepts straight quotes " ' and backticks.
+Why everything vanished
+A syntax error anywhere in a <script> block stops the whole block from running — the browser refuses to parse it at all. Everything the script would have built (tabs, grid cells, event listeners) never happened. Static HTML written by hand still rendered.
+Fix
+Replaced the curly quotes with straight quotes on those lines only. Zero other code changed.
+Verified by
+node --check on the extracted script (clean), then a browser reload showing tabs, grid, and the D3 sample card.
+Data
+localStorage keys gridindex-v1 and gridindex-set were never touched. Cards, library, notes, snapshots all intact.
+
+Lesson for the gate: any code that passes through a word processor, chat window, or email can get its quotes "auto-corrected" into curly ones. Before publishing, run a syntax check (node --check file.js) or paste into an editor that highlights strings. Curly quotes show up as a different color than straight ones.
+
+2. Padding audit (no code changed)
+The box model in one breath
+Every element is four nested boxes, inside → out: content → padding → border → margin. Padding is the space inside the border (it takes the background color). Margin is the space outside the border (transparent, pushes neighbors away). This file sets *{box-sizing:border-box}, which means a declared width already includes padding and border — the safe default.
+Reading the shorthand
+Padding shorthand goes clockwise from the top: top, right, bottom, left.
+Values written
+Meaning
+padding:18px
+all four sides 18
+padding:8px 14px
+top/bottom 8, left/right 14
+padding:16px 14px 60px
+top 16, left/right 14, bottom 60
+
+Every padding rule in the file
+Selector
+Padding
+Note
+.wrap
+16px 14px 60px
+Page gutter. 14px sides is just under the 16px accessibility guideline for a side gutter.
+.tag
+3px 8px
+Small mono label. Fine.
+.tab
+8px 14px
+Tab buttons.
+button
+9px 14px
+Regular buttons. 1px taller than .tab — harmless, because both have min-height:44px which decides the real height.
+button.small
+6px 10px
+Compact buttons, min-height:36px.
+input, textarea, select
+10px 12px
+Form fields. Fine.
+.panel
+18px
+Section cards.
+.item
+12px
+List cards inside panels.
+.empty
+14px
+Dashed "nothing here" box.
+.banner
+12px 14px
+Welcome-back strip.
+.stub
+8px 11px
+"Not in this build" boxes. 11 is the odd one out.
+.cell
+5px 6px
+Grid cells — tight on purpose so 7 columns fit.
+.badge / .pill / .cite
+1px 6px / 2px 7px / 1px 5px
+Tiny chips; three slightly different sizes.
+.snippet mark
+0 2px
+Highlight. Fine.
+.foot
+padding-top:12px
+Footer, one side only.
+.tintbtn
+0
+Round color swatches.
+#toast
+12px 16px
+Bottom notification.
+inline (#fileUp)
+0
+Native file input.
+inline (reader body)
+14px
+Reading pane.
+
+Verdict
+Nothing is broken and nothing needs changing for the page to work. The one real finding is inconsistency: values are 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18 — not on any scale. Professional stylesheets usually pick a spacing scale (multiples of 4: 4, 8, 12, 16, 24, 32) and store them as CSS variables like --sp-2:8px, the same way this file already does for colors (--accent, --line). That's a future cleanup, not a fix, and it belongs behind the gate.
+
+3. Pseudocode — the whole app
+FILE study-workstation.html
+  <title>, <style> (CSS), HTML skeleton, <script> (JavaScript) — one file, no build step.
+
+CONSTANTS
+  KEY  = "gridindex-v1"              // localStorage key for all data
+  COLS = A..G ; ROWS = 1..6          // 42 cells
+  TABS = board, library, retrieve, assistant, study, session
+
+DATA MODEL  (this is what the JSON looks like)
+  STATE = {
+    records:   [ card {id,title,body,coord "D3",zone GREEN|YELLOW|RED,cognitiveLoad 1-10,version,sourceDocId,parentId,createdAt,updatedAt} ],
+    documents: [ doc {id,title,body,chapters[{title,pages[]}],createdAt,updatedAt} ],
+    notes, journal, glossary: [ ... ],
+    session:   snapshot | null,      // most recent snapshot
+    snapshots: [ up to 20 snapshots ],
+    log:       [ up to 100 {at,text} ]
+  }
+  SET = { autoRead, tint, zi (text-size index), readMode word|sentence|full, voice }
+       // saved separately under key "gridindex-set"
+
+PERSISTENCE
+  load():  read KEY from localStorage → JSON.parse → merge over blank(); if empty, seed() a sample doc + card
+  save():  JSON.stringify(STATE) → write to KEY        (called after every mutation)
+
+BOOT  (runs once, bottom of the script, after all HTML exists)
+  build the six tab buttons and wire click + arrow-key handling
+  attach click listeners to every static button (Grid/List/Clear, Search, Save snapshot, Export, Import, tint, zoom, voice…)
+  load()
+  if a saved session has a selected cell → preselect it
+  renderBoard(); applyTint(); applyZoom()
+  if a saved session exists → insert "Welcome back" banner on Board
+
+TAB SWITCHING  selectTab(id)
+  mark chosen tab aria-selected, hide all panels except p-<id>
+  call the panel's render function (renderBoard / renderLibrary / renderStudy / renderSession / renderAssistant)
+
+BOARD
+  renderBoard():
+    grid view  → draw header row A..G, then for each row 1..6 draw 7 <button class=cell>
+                 a cell shows its coord, the newest card's title, a count badge if >1, a zone dot
+    list view  → all cards sorted by coord
+    then renderCell()
+  renderCell():  show cards stacked at the selected coord + "Add card here"
+  cardItem():    one card with Edit / Branch / Find related / Delete (Delete offers Undo via toast)
+  editCard():    inline form → validates coord A1–G6 and load 1–10 → upsertCard() → save()
+  branchCard():  makes three child cards "— Define / — Effect / — Next" in the same cell
+  findRelated(): same cell OR same petal OR ≥2 shared words (3+ letters)
+
+LIBRARY
+  addDoc(title, body):  splitChapters(body) → unshift into documents → save()
+  splitChapters():      headings are lines starting with # / ## / ### or "Chapter N"; each chapter paginated 220 words/page
+  file upload:          FileReader reads .txt/.md/.html; HTML is stripped to text first
+  reader:               chapter/page navigation, read-aloud by word | sentence | full with follow-along highlight,
+                        "Save page as note" / "Save page as card"
+
+RETRIEVE  (the retrieve step of RAG — keyword only, no embeddings)
+  tokens(str):  lowercase, split on non-alphanumerics, keep words > 2 letters
+  retrieve(q):  for every record / document / note / journal / glossary item
+                  score = number of distinct query words present in the item's text
+                keep score > 0, sort by score desc then title, return top 12 with a 220-char snippet
+  optional grounded answer: if toggle on → ask Claude with ONLY the hits as context, cite ids
+
+STUDY
+  three sub-tabs: notes / journal / glossary — each is a quick-add form + list with Delete+Undo
+
+SESSION  (JSON in and out)
+  Save snapshot:  {at, selectedId, selectedTitle, selectedCoord, query, recordCount, documentCount, logHead[5]}
+                  → STATE.session and unshift into snapshots (cap 20)
+  Export JSON:    bundle() = {records, documents, glossary, notes, journal, session, exportedAt}
+                  → pretty-printed into a textarea, and downloaded if the platform allows
+  Import JSON:    JSON.parse(pasted text) → for each of the five arrays, append items;
+                  an id that already exists gets "-imp" appended → save() → re-render
+  Delete JSON:    pick a snapshot to remove (with Undo)
+  Activity log:   last 20 entries + list of saved snapshots
+
+ASSISTANT  (Claude, tool-using, grounded in the user's own material)
+  sendAsst(q):
+    if no Claude access → explain and stop
+    tools = [
+      search(query)               → retrieve()
+      createCard(title,body,coord)→ upsertCard()
+      saveNote(title,body)        → addNote()
+      readSession(limit)          → last N snapshots + last 10 log lines + current counts   ← the new tool
+    ]
+    system prompt: search first, answer only from hits, cite ids; call readSession before talking about past sessions
+    reply → strip markdown → render as read-aloud units → optional auto-read → list of actions taken
+
+ACCESSIBILITY SETTINGS
+  reading tint (default / yellow / teal / cream), text size (5 steps via CSS zoom),
+  read-aloud voice picker, read-by word/sentence/full, all remembered in SET
+
+NOT IN THIS BUILD (named stubs, not silent)
+  .docx/.pdf parsing · OneDrive/Drive import · Whisper dictation · vector search · cross-device sync
+
+4. The documentation gate (proposed rule)
+Nothing is published to the artifact URL until all three exist for that version:
+GitHub — the .html file committed by Shannon (sole commit authority), commit message names the change.
+Permanent record — this document (Google Docs) updated with a dated line under "Change log".
+Pseudocode — section 3 above updated if behavior changed.
+Plus one mechanical check: node --check on the script before publish.
+Change log
+2026-09-13 — v12. Fixed smart-quote syntax error in saveNote/readSession. Padding audited, no changes. Record created.
+
