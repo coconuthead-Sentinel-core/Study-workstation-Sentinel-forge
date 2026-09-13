@@ -1,0 +1,244 @@
+Sentinel Forge Study Workstation
+Version: v12 · Date: 2026-09-13
+Repository: study-workstation-web
+Status: Active development — practice twin
+
+Overview
+The Sentinel Forge Study Workstation is a browser-based study tool built for university students. It combines a spatial index board, a flashcard library, a retrieval-practice engine, an AI assistant, and a structured study-session tracker — all in a single self-contained HTML file that runs offline with no server required.
+Data persists in browser localStorage (key: gridindex-v1). A JSON export/import bridge allows cards to move between this web version and a companion Grok copy. The two instances do not share a database.
+The Retrieve tab implements the retrieve stage of RAG (Retrieval-Augmented Generation): keyword scoring without embeddings or vector search. This makes the architecture transparent and teachable at the undergraduate level.
+
+Project Authorship and Role Clarity
+Architect and Design Director: Shannon Brian Kelly
+Implementation: Claude (Anthropic) — coding assistant operating under Shannon's direction
+Shannon Kelly directed all design decisions, commissioned the accessibility research, specified the neural-inclusive design rationale, and defined the documentation gate and SDLC workflow described in this file. The coding assistant translated those specifications into working code and produced supporting documentation on request.
+This project is part of Shannon's professional portfolio demonstrating skills in:
+Systems architecture and technical product direction
+Evidence-based, accessibility-first UX design
+AI-assisted software development workflows
+Neurodivergent-inclusive information architecture
+Knowledge management frameworks (Neural Lattice Cognitive Architecture, v1.0)
+
+Why This Dashboard Is Designed This Way
+Neural-Inclusive Design Rationale
+This workstation was deliberately designed to serve students with a range of cognitive and sensory profiles. The design is not a retrofit — it is the foundation. The architecture follows Shannon's Neural Lattice Cognitive Architecture (v1.0), which applies zone-based cognitive load management, structured protocol layers, and neurodivergent-optimized information chunking to AI-human collaboration tools.
+The following profiles were considered during design:
+Profile
+Design consideration implemented
+ADHD
+Short chunked content fields; Pomodoro-aligned session tab; minimal visual clutter
+Dyslexia
+BDA Dyslexia Style Guide 2023 font/spacing/tint guidance; left-aligned text; generous line height
+Dysgraphia
+Template-driven card creation; AI-assisted card generation on request
+Dyscalculia
+Alphanumeric board coordinates (A1, B3) rather than pure number grids; row and column labels always visible
+Autism
+Predictable, consistent layout; no auto-playing elements; explicit state feedback on every action
+Anxiety / PTSD
+Low-stimulation dark theme; no timed pressure outside student-controlled sessions
+Low vision
+High-contrast dark tokens; scalable text; no information conveyed by colour alone
+Deaf / Hard of hearing
+No audio dependency; all information is visual
+Stress-related memory disorders
+Spatial index board externalises working memory load; retrieval practice reduces cramming pressure
+
+
+Accessibility Standards and Sources
+Design decisions are grounded in the following standards and literature. Citations are organised by jurisdiction as required for international compliance reporting.
+International Baseline
+WCAG 2.1 (2018) / WCAG 2.2 (2023) — W3C Web Content Accessibility Guidelines. Minimum conformance target: Level AA.
+New 2.2 criteria directly benefiting neurodivergent users: 2.4.11 Focus Appearance (Minimum), 2.4.12 Focus Appearance (Enhanced), 2.5.8 Target Size (Minimum), 3.3.7 Redundant Entry
+Source: https://www.w3.org/TR/WCAG22/
+W3C COGA — Cognitive and Learning Disabilities Accessibility Task Force
+Making Content Usable for People with Cognitive and Learning Disabilities (2021)
+Covers ADHD, memory impairment, mental health conditions including PTSD
+Source: https://www.w3.org/TR/coga-usable/
+United Kingdom
+British Dyslexia Association (BDA) Dyslexia Style Guide 2023
+Font recommendations (sans-serif ≥ 12–14 pt), line spacing (1.5×), background tints, column width limits
+Source: https://www.bdadyslexia.org.uk/advice/employers/creating-a-dyslexia-friendly-workplace/dyslexia-friendly-style-guide
+UK Home Office Accessibility Posters (2019)
+Individual poster sets for: deaf or hard of hearing; low vision; motor disabilities; autism; dyslexia; anxiety and PTSD
+Source: https://ukhomeoffice.github.io/accessibility-posters/
+Public Sector Bodies Accessibility Regulations 2018 — implements WCAG 2.1 AA as a legal requirement for UK public sector digital services
+Scotland — Scottish Government Digital Accessibility Guidance
+Aligns with WCAG 2.1 AA; references BDA and COGA supplementary guidance
+Source: https://www.gov.scot/publications/accessibility/
+European Union
+European Accessibility Act (EAA) — Directive 2019/882/EU
+Came into force June 28, 2025 for private sector products and services
+Mandates WCAG 2.1 AA for software and digital interfaces
+Source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32019L0882
+EN 301 549 v3.2.1 (2021) — Harmonised European standard for ICT accessibility; adopted as the technical reference under the EAA
+Source: https://www.etsi.org/deliver/etsi_en/301500_302000/301549/03.02.01_60/en_301549v030201p.pdf
+Germany
+BITV 2.0 — Barrierefreie-Informationstechnik-Verordnung (2019)
+German federal accessibility ordinance; references EN 301 549; applies to federal public sector; Länder ordinances extend coverage
+Source: https://www.gesetze-im-internet.de/bitv_2_0/
+Netherlands
+Digitoegankelijk (Digital Accessibility Netherlands)
+National implementation of EN 301 549 and WCAG 2.1 AA; published accessibility standard for public sector
+Source: https://www.digitoegankelijk.nl/
+Canada
+Accessible Canada Act (ACA), S.C. 2019, c. 10
+Federal legislation requiring proactive identification and removal of barriers for persons with disabilities
+Source: https://laws-lois.justice.gc.ca/eng/acts/A-0.6/
+Accessibility for Ontarians with Disabilities Act (AODA) — Integrated Accessibility Standards Regulation, O. Reg. 191/11
+Ontario provincial standard; WCAG 2.0 Level AA minimum; moving toward 2.1
+Source: https://www.ontario.ca/laws/regulation/110191
+CAN/ASC-EN 301 549:2024 — Canadian adoption of EN 301 549; published by the Accessibility Standards Canada / Standards Council of Canada
+Source: https://accessible.canada.ca/
+United States
+Americans with Disabilities Act (ADA), 42 U.S.C. § 12101 et seq.
+Courts and the DOJ have consistently applied ADA Title III to web-based services
+Section 508 of the Rehabilitation Act, 29 U.S.C. § 794d
+Requires federal agencies and federally funded entities to ensure ICT is accessible; technical standard references WCAG 2.0 AA
+Source: https://www.section508.gov/
+IDEA — Individuals with Disabilities Education Act, 20 U.S.C. § 1400
+Guarantees accessible educational tools for K-12; sets precedent for accessible design in educational software
+Source: https://sites.ed.gov/idea/
+Pedagogical Research
+Slamecka, N. J., & Graf, P. (1978). The generation effect: Delineation of a phenomenon. Journal of Experimental Psychology: Human Learning and Memory, 4(6), 592–604.
+Students who generate content (write their own cards) retain it significantly better than students who passively receive it
+Rose, D. H., & Meyer, A. (2002). Teaching Every Student in the Digital Age: Universal Design for Learning. ASCD.
+UDL framework: graduated scaffolding means student agency by default; instructor/assistant support on request
+Source: http://www.cast.org/teaching-every-student/
+Cast.org — UDL Guidelines (2018) — Checkpoint 9.3: Develop self-assessment and reflection; student-controlled scaffolding
+Source: https://udlguidelines.cast.org/
+
+Architecture
+study-workstation.html          Single-file app (HTML + CSS + JS, ~907 lines)
+│
+├── Tab: Board                  Spatial index grid (A–Z × demand-driven rows)
+├── Tab: Library                Full card list with search/filter
+├── Tab: Retrieve               RAG retrieve stage — keyword scoring
+├── Tab: Assistant              AI-assisted card creation and study advice
+├── Tab: Study                  Active recall flashcard mode
+└── Tab: Session                Pomodoro-aligned session timer and log
+│
+└── localStorage["gridindex-v1"]  Sparse JSON record store (no server required)
+Data layer: Records are stored sparsely — only cells that hold at least one card exist in the data store. The board renders on demand from the data, not from a pre-allocated fixed grid.
+
+Board — Current Behaviour (v12)
+The board currently renders a fixed 7-column × 6-row grid (columns A–G, rows 1–6). Coordinates are validated against the pattern ^[A-G][1-6]$. The hint text reads: "A 7×6 index (A1–G6). Each card has a fixed address. Tap a cell to see or add cards."
+
+Team Meeting — 2026-09-13
+Attendees: Shannon Brian Kelly (Architect), Claude (Coding Assistant)
+Topic: Board elastic extension; accessibility research review; note card pedagogy decision
+Decisions made
+Expand columns from A–G to A–Z (26 columns).
+The full Latin alphabet provides a natural, memorable, and dyslexia-compatible addressing system. No numbering system required for columns.
+Expand rows from fixed 1–6 to demand-driven (potentially 1–100+).
+Rows render only when occupied content exists, plus a configurable buffer of empty rows below the lowest occupied row. No pre-allocation. Cells collapse back visually when all their cards are deleted.
+Note card creation: student-controlled by default; assistant-on-request.
+Evidence basis: the Generation Effect (Slamecka & Graf, 1978) shows student-generated content is retained significantly better than passively received content. UDL graduated scaffolding principle: maximum student agency at the baseline; scaffolding available on explicit request.
+Implementation: the student manually enters a card coordinate. The assistant may suggest or place a card if the student explicitly asks ("put this in the right cell for me"). When the assistant places a card, it must display its reasoning (e.g., "I put this at C3 because it matches your other retrieval notes").
+All design changes require documentation before code changes. The documentation gate remains in effect (see below).
+README.md becomes the first source of truth for the elastic board extension. After README is committed to GitHub, pseudocode becomes the second source of truth, then code is updated.
+
+New Code Required — Next Implementation Sprint
+The following changes are specified and approved by the architect. No code is to be modified until this README is committed and pseudocode is written.
+Change 1 — Expand address space to A–Z × demand-driven rows
+Current code (lines ~19 of script):
+const COLS=["A","B","C","D","E","F","G"], ROWS=[1,2,3,4,5,6];
+Replacement:
+const COLS = Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i));
+// ROWS is no longer a constant — derived at render time from occupied data
+
+Change 2 — Update coordinate validator in editCard
+Current:
+if(!/^[A-G][1-6]$/.test(coordV)){toast("The cell must be A1 through G6.");return;}
+Replacement:
+if(!/^[A-Z]\d{1,3}$/.test(coordV) || parseInt(coordV.slice(1)) < 1){
+  toast("Cell must be a letter A–Z followed by a row number (e.g. A1, Z42).");
+  return;
+}
+
+Change 3 — Update coordinate default in newCard
+Current:
+coord: /^[A-G][1-6]$/.test(o.coord) ? o.coord : "D3",
+Replacement:
+coord: /^[A-Z]\d{1,3}$/.test(o.coord) && parseInt(o.coord.slice(1)) >= 1
+       ? o.coord : "D3",
+
+Change 4 — Demand-driven board renderer
+The board render function must be rewritten to:
+Collect all occupied row numbers from STATE.records
+Compute a render range: min occupied row down to max occupied row, plus a buffer of 3 empty rows below
+Render only that row range (no fixed loop to 6)
+Always include at least rows 1–6 when the data store is empty (blank-slate default)
+Pseudocode outline (to be fully specified in STUDY_WORKSTATION_RECORD_AND_PSEUDOCODE.md):
+function getRowsToRender(records, buffer = 3):
+    occupied = unique row numbers from records (parsed integer)
+    if occupied is empty: return [1, 2, 3, 4, 5, 6]
+    maxRow = max(occupied)
+    return range(1, maxRow + buffer)
+
+function renderBoard():
+    rows = getRowsToRender(STATE.records)
+    cols = COLS  // A–Z
+    for each row in rows:
+        for each col in cols:
+            coord = col + row
+            cards = listAt(coord)
+            render cell(coord, cards)
+
+Change 5 — Update Board hint text (HTML)
+Current:
+<p class="hint">A 7×6 index (A1–G6). Each card has a fixed address. Tap a cell to see or add cards.</p>
+Replacement:
+<p class="hint">A–Z columns × rows that grow as you add cards. Each card has a fixed address. Tap a cell to see or add cards — the board expands when you do.</p>
+
+Change 6 — Assistant card placement reasoning display
+When the assistant places a card at a coordinate (assistant-on-request mode), the UI must display a one-line explanation beneath the card in the Board cell, e.g.:
+"Placed at C3 — matches your other retrieval-practice notes in column C."
+This text should be visually distinct (italic, reduced opacity) and dismissible.
+
+Known Gaps and Audit Items (Pending)
+Item
+Standard
+Priority
+Contrast ratio audit — dark theme colour tokens
+WCAG 1.4.3 (4.5:1 normal text)
+High
+400% zoom reflow test — no horizontal scroll
+WCAG 1.4.10
+High
+Row number label accessibility — dyscalculia support
+W3C COGA
+Medium
+Screen reader landmark/ARIA audit
+WCAG 1.3.1, 4.1.2
+Medium
+Keyboard-only navigation test
+WCAG 2.1.1
+Medium
+
+
+Documentation Gate
+Nothing gets changed or rebuilt until it is documented in three places.
+GitHub — this README and commit history (first source of truth)
+Google Docs / OneDrive — permanent off-platform record (STUDY_WORKSTATION_RECORD_AND_PSEUDOCODE.md mirrored)
+Pseudocode — STUDY_WORKSTATION_RECORD_AND_PSEUDOCODE.md updated with pseudocode for every behaviour change before code is touched
+Pre-commit syntax check (mandatory):
+# Extract the script block and check for syntax errors
+# (catches curly quotes and other corruption)
+node --check study-workstation.html
+Commit message convention:
+feat(board): <short description of change>
+
+- What changed and why
+- Which documentation was updated
+
+Footer Credit (as shown in the app)
+Sentinel Forge Study Workstation · study-workstation-web · practice twin. Works alongside the Grok copy — material moves between them by JSON export, not a shared database.
+Retrieve = the retrieve stage of RAG (store → retrieve). No embeddings, no BM25.
+Design follows the BDA Dyslexia Style Guide (2023), the UK Home Office accessibility posters, and W3C COGA guidance. Full credits in the README.
+
+Licence
+Personal and educational use. Shannon Brian Kelly retains authorship and design credit.
+
+README generated 2026-09-13 following team meeting between architect Shannon Brian Kelly and coding assistant Claude (Anthropic). All design decisions made by the architect; documentation and implementation produced by the coding assistant under direction.
+
